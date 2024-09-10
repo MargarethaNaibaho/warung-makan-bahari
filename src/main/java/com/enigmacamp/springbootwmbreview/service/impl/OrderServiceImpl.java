@@ -2,12 +2,11 @@ package com.enigmacamp.springbootwmbreview.service.impl;
 
 import com.enigmacamp.springbootwmbreview.dto.request.OrderDetailRequest;
 import com.enigmacamp.springbootwmbreview.dto.request.OrderRequest;
+import com.enigmacamp.springbootwmbreview.dto.response.OrderDetailResponse;
+import com.enigmacamp.springbootwmbreview.dto.response.OrderResponse;
 import com.enigmacamp.springbootwmbreview.entity.*;
-import com.enigmacamp.springbootwmbreview.repository.MenuRepository;
-import com.enigmacamp.springbootwmbreview.repository.OrderDetailRepository;
 import com.enigmacamp.springbootwmbreview.repository.OrderRepository;
 import com.enigmacamp.springbootwmbreview.service.*;
-import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -94,34 +93,33 @@ public class OrderServiceImpl implements OrderService {
 
     //cara 2
     //cara ini dia ngeflush order yg dah jadi dulu. kemudian dia ngedata order detail kemudian createBulk
-    public Order createNewTransaction(OrderRequest orderRequest){
-        //buat entity object terlebih dahulu
-        Order order = new Order();
-
-        //customer
+    public OrderResponse createNewTransaction(OrderRequest orderRequest){
         Customer customer = customerService.getByIdCustomer(orderRequest.getCustomerId());
-        order.setCustomer(customer);
-
-        //table
         Table table = tableService.getTableByName(orderRequest.getTableName());
-        order.setTable(table);
-        order.setTransDate(LocalDateTime.now());
+
+        //buat entity object terlebih dahulu
+        //ini pake chaining method. nnti kalo ada method yg dipanggil berulang kali, nilainya yg dipake adalah method itu yg terakhir
+        //ga perlu urut dengan definisi dari kelas si order itu
+        Order order = Order.builder()
+                .customer(customer)
+                .table(table)
+                .transDate(LocalDateTime.now())
+                .build();
 
         orderRepository.saveAndFlush(order);
 
         //order detail
         List<OrderDetail> orderDetails = new ArrayList<>();
         for(OrderDetailRequest orderDetailRequest : orderRequest.getOrderDetails()){
-            //simpan order detail
-            OrderDetail orderDetail = new OrderDetail();
-            orderDetail.setOrder(order);
-
-            //simpan menu
             Menu menu = menuService.getMenuById(orderDetailRequest.getMenuId());
-            orderDetail.setMenu(menu);
-
-            orderDetail.setQuantity(orderDetailRequest.getQuantity());
-            orderDetail.setPrice(menu.getPrice());
+            //simpan order detail
+            //pake builder ini kek pake setter gitu
+            OrderDetail orderDetail = OrderDetail.builder()
+                    .price(menu.getPrice())
+                    .order(order)
+                    .quantity(orderDetailRequest.getQuantity())
+                    .menu(menu)
+                    .build();
 
             orderDetails.add(orderDetail);
 
@@ -130,6 +128,55 @@ public class OrderServiceImpl implements OrderService {
         orderDetailService.createBulk(orderDetails);
         order.setOrderDetails(orderDetails);
 
-        return order;
+        return mapToOrderResponse(order);
+    }
+
+    private OrderResponse mapToOrderResponse(Order order) {
+        List<OrderDetailResponse> orderDetailResponses =  order.getOrderDetails().stream()
+                .map(
+                    orderDetail -> {
+                        return OrderDetailResponse.builder()
+                                .orderDetailId(orderDetail.getId())
+                                .orderId(orderDetail.getOrder().getId())
+                                .menuId(orderDetail.getMenu().getId())
+                                .menuName(orderDetail.getMenu().getName())
+                                .price(orderDetail.getPrice())
+                                .quantity(orderDetail.getQuantity())
+                                .build();
+                    }
+                )
+                .collect(Collectors.toList());
+
+        OrderResponse orderResponse = OrderResponse.builder()
+                .orderId(order.getId())
+                .customerId(order.getCustomer().getId())
+                .tableName(order.getTable().getName())
+                .orderDetails(orderDetailResponses)
+                .transDate(order.getTransDate())
+                .build();
+        return orderResponse;
+    }
+
+    @Override
+    public List<OrderResponse> getAll() {
+        List<Order> orders = orderRepository.findAll();
+
+        //cara pertama
+        List<OrderResponse> orderResponses = new ArrayList<>();
+        for(Order order : orders){
+            OrderResponse orderResponse = mapToOrderResponse(order);
+            orderResponses.add(orderResponse);
+        }
+
+        //cara kedua pake lambda stream
+        List<OrderResponse> orderResponseListStream = orders.stream().map(order -> mapToOrderResponse(order)).collect(Collectors.toList());
+
+        return orderResponses;
+    }
+
+    @Override
+    public OrderResponse getById(String id) {
+        OrderResponse orderResponse = mapToOrderResponse(orderRepository.findById(id).orElseThrow(() -> new RuntimeException("Order isnt found!")));
+        return orderResponse;
     }
 }

@@ -3,6 +3,7 @@ package com.enigmacamp.springbootwmbreview.entity;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,6 +12,7 @@ import java.util.List;
 
 @Entity
 @jakarta.persistence.Table(name = "t_order")
+@Builder
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
