@@ -1,5 +1,6 @@
 package com.enigmacamp.springbootwmbreview.controller;
 
+import com.enigmacamp.springbootwmbreview.dto.request.OrderRequest;
 import com.enigmacamp.springbootwmbreview.entity.Order;
 import com.enigmacamp.springbootwmbreview.service.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +14,7 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping("/api/v1/transaction")
-    public Order createNewTransaction(@RequestBody Order order){
-        return orderService.createNewTransaction(order);
+    public Order createNewTransaction(@RequestBody OrderRequest orderRequest){
+        return orderService.createNewTransaction(orderRequest);
     }
 }

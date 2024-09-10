@@ -1,5 +1,6 @@
 package com.enigmacamp.springbootwmbreview.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -30,5 +31,6 @@ public class Order {
     private LocalDateTime transDate; //date time berdasarkan lokasi kita
 
     @OneToMany(mappedBy = "order")
+    @JsonManagedReference
     private List<OrderDetail> orderDetails;
 }

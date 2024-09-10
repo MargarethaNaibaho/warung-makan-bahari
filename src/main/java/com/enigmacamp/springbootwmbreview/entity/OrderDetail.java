@@ -1,5 +1,6 @@
 package com.enigmacamp.springbootwmbreview.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.persistence.Table;
@@ -18,7 +19,8 @@ public class OrderDetail {
     private String id;
 
     @ManyToOne
-    @JsonIgnore //ini dia supaaya ga panggil terus terusan
+//    @JsonIgnore //ini dia supaaya ga panggil terus terusan
+    @JsonBackReference
     @JoinColumn(name = "order_id")
     private Order order;
 

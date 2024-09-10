@@ -41,6 +41,11 @@ public class TableServiceImpl implements TableService {
     }
 
     @Override
+    public Table getTableById(String id) {
+        return findByIdOrThrowNotFound(id);
+    }
+
+    @Override
     public Table updateTable(Table table) {
         try{
             findByIdOrThrowNotFound(table.getId());

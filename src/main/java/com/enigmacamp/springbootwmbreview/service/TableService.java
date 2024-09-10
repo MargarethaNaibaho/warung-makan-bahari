@@ -8,6 +8,7 @@ public interface TableService {
     Table createNewTable(Table table);
     List<Table> getAllTables();
     Table getTableByName(String name);
+    Table getTableById(String id);
     Table updateTable(Table table);
     void deleteTableById(String id);
 }
