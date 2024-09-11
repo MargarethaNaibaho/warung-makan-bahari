@@ -1,8 +1,15 @@
 package com.enigmacamp.springbootwmbreview.controller;
 
+import com.enigmacamp.springbootwmbreview.dto.request.PagingCustomerRequest;
+import com.enigmacamp.springbootwmbreview.dto.response.CommonResponse;
+import com.enigmacamp.springbootwmbreview.dto.response.PagingResponse;
 import com.enigmacamp.springbootwmbreview.entity.Customer;
 import com.enigmacamp.springbootwmbreview.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,8 +35,47 @@ public class CustomerController {
     }
 
     @GetMapping()
-    public List<Customer> getAllCustomer(){
-        return customerService.getAllCustomer();
+    //dari sisi user kita buat mulai dari angka 1 untuk halaman pertama
+    //tapi dari sisi backend, itu dimulai dari angka 0 yg menjadi halaman pertama.makanya nanti di service, nilai dari page yg dibawa dari sini akan dikurangi 1
+    public ResponseEntity<?> getAllCustomer(@RequestParam(required = false, defaultValue = "1") Integer page,
+                                            @RequestParam(required = false, defaultValue = "5") Integer size){
+        //nampung nilai yang diterima dari param ke pagingcustomerrequest
+        //ini akan jadi value yg akan diparse ke customerService
+        PagingCustomerRequest pagingCustomerRequest = PagingCustomerRequest.builder()
+                .page(page)
+                .size(size)
+                .build();
+
+        //nampung nilai yang diterima dari customerService
+        Page<Customer> customers = customerService.getAllCustomer(pagingCustomerRequest);
+
+        //set paging response untuk dimasukkan ke common response nanti
+        //ini gunanya untuk memfilter data dari var customers karna kita cuma butuh beberapa key dari dalamnya. ga semua
+        PagingResponse pagingResponse = PagingResponse.builder()
+                .page(page)
+                .size(size)
+                .count(customers.getTotalElements())
+                .totalPages(customers.getTotalPages())
+                .build();
+
+        //masukkan nilai yg tadi dah ditampung sebelumnya ke dalam common response
+        //karna common response yang akan jadi body pada ResponseEntity
+        //kenapa tipe datanya si CommonResponse ituu jadi <List<Customer>>?
+        //karna CommonResponse ada inisialisasi tipe data generic <T> untuk dipake nanti oleh si atribut data.
+        //atribut data ini untuk saat ini akan kita isi dengan list customer
+        CommonResponse<List<Customer>> response = CommonResponse.<List<Customer>>builder()
+                .message("Successfully get all customers")
+                .statusCode(HttpStatus.OK.value())
+
+                //getContent ini dippake untuk nampung datanyanya tadi yg masih dalam bentuk page
+                //menjadi List. makanya tipe data
+                .data(customers.getContent())
+                .paging(pagingResponse)
+                .build();
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(response);
     }
 
     @PutMapping()

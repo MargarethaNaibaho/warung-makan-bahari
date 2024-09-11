@@ -4,7 +4,9 @@ import com.enigmacamp.springbootwmbreview.entity.Menu;
 import com.enigmacamp.springbootwmbreview.repository.MenuRepository;
 import com.enigmacamp.springbootwmbreview.service.MenuService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -43,6 +45,7 @@ public class MenuServiceImpl implements MenuService {
     }
 
     private Menu findByIdOrThrowNotFound(String id){
-        return menuRepository.findById(id).orElseThrow(() -> new RuntimeException("Menu isn't found!"));
+        //aku ganti si runtimeexception menjadi class error controller yg kubu
+        return menuRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Menu isn't found!"));
     }
 }

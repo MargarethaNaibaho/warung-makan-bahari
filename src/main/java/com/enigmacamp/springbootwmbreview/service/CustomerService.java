@@ -1,6 +1,8 @@
 package com.enigmacamp.springbootwmbreview.service;
 
+import com.enigmacamp.springbootwmbreview.dto.request.PagingCustomerRequest;
 import com.enigmacamp.springbootwmbreview.entity.Customer;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -9,7 +11,7 @@ public interface CustomerService {
 
     Customer getByIdCustomer(String id);
 
-    List<Customer> getAllCustomer();
+    Page<Customer> getAllCustomer(PagingCustomerRequest pagingCustomerRequest);
 
     Customer updateCustomer(Customer customer);
 
