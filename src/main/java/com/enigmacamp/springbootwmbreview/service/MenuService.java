@@ -1,15 +1,19 @@
 package com.enigmacamp.springbootwmbreview.service;
 
+import com.enigmacamp.springbootwmbreview.dto.request.NewMenuRequest;
+import com.enigmacamp.springbootwmbreview.dto.request.PagingMenuRequest;
+import com.enigmacamp.springbootwmbreview.dto.response.MenuResponse;
 import com.enigmacamp.springbootwmbreview.entity.Menu;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public interface MenuService {
-    Menu createNewMenu(Menu menu);
+    MenuResponse createNewMenu(NewMenuRequest newMenuRequest);
     Menu getMenuById(String id);
-    List<Menu> getAllMenus(String name, Long minPrice, Long maxPrice);
+    Page<Menu> getAllMenus(PagingMenuRequest pagingMenuRequest);
     Menu updateMenu(Menu menu);
     void deleteMenuById(String id);
 }
