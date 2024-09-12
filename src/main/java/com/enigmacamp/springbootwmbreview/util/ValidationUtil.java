@@ -14,6 +14,7 @@ public class ValidationUtil {
     private final Validator validator;
 
     //dia bisa terima tipe data apapun
+    //untuk saat ini, ini biasanya dipake di controller untuk memvalidasi isi request yg diterima
     public void validate(Object object){
         Set<ConstraintViolation<Object>> result = validator.validate(object);
         if(!result.isEmpty()){

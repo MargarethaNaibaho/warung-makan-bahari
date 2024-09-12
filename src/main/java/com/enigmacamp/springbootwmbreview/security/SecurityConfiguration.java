@@ -10,7 +10,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
-@EnableWebSecurity
+@EnableWebSecurity //ini yg buat method filterChain otomatis di cari konfig ini. nanti otomatis terpanggil
 public class SecurityConfiguration {
     @Bean
     //goalsnya adalah link API yg dibuat akan dikasih autentikasinya, ga akan diredirect ke login terlebih dahulu yg dari spring framework
@@ -26,10 +26,10 @@ public class SecurityConfiguration {
 //                .build();
 
         //ini dah jalan
-        return httpSecurity.csrf(csrf -> csrf.disable())
+        return httpSecurity.csrf(csrf -> csrf.disable()) //arti csrf.disable ini adalah nonaktifkannya karna kita pake stateless auntentikasi(JWT)
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
-                        .requestMatchers("**").permitAll()
-                        .anyRequest().authenticated()
+                        .requestMatchers("**").permitAll() //artinya semua request dengan URL pattern ** bisa jalan tanpa perlu autentikasi login bawaan spring templatenya
+                        .anyRequest().authenticated() //selain url yg ditetapkan di atas, harus diautentikasi
                 )
                 //.formLogin(formLogin -> formLogin.disable()) //bisa diganti dengan .formLogin(AbstractHttpConfigurer::disable)
                 .build();
