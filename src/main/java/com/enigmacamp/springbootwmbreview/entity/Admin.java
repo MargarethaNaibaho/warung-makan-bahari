@@ -2,38 +2,29 @@ package com.enigmacamp.springbootwmbreview.entity;
 
 import jakarta.persistence.*;
 import jakarta.persistence.Table;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "m_customer")
-@Builder
-@Getter
-@Setter
+@Table(name = "m_admin")
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Customer {
+@Builder
+public class Admin {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    @Column(name = "name")
+    @Column
     private String name;
 
-    @Column(name = "phone_number", unique = true)
+    @Column(name = "phone_number")
     private String phoneNumber;
-
-    @Column(name = "is_member")
-    private Boolean isMember = false;
 
     @OneToOne
     @JoinColumn(name = "m_user_credential_id")
     private UserCredential userCredential;
-
-    //ini aku buat sendiri
-    @PrePersist
-    public void prePersist(){
-        if(isMember == null){
-            isMember = false;
-        }
-    }
 }
