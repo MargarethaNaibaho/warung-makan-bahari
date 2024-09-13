@@ -1,7 +1,9 @@
 package com.enigmacamp.springbootwmbreview.controller;
 
+import com.enigmacamp.springbootwmbreview.dto.request.NewCustomerRequest;
 import com.enigmacamp.springbootwmbreview.dto.request.PagingCustomerRequest;
 import com.enigmacamp.springbootwmbreview.dto.response.CommonResponse;
+import com.enigmacamp.springbootwmbreview.dto.response.CustomerResponse;
 import com.enigmacamp.springbootwmbreview.dto.response.PagingResponse;
 import com.enigmacamp.springbootwmbreview.entity.Customer;
 import com.enigmacamp.springbootwmbreview.service.CustomerService;
@@ -24,14 +26,41 @@ public class CustomerController {
         this.customerService = customerService;
     }
 
-    @PostMapping()
-    public Customer createNewCustomer(@RequestBody Customer customer){
-        return customerService.createNewCustomer(customer);
+//    @PostMapping()
+//    public Customer createNewCustomer(@RequestBody Customer customer){
+//        return customerService.createNewCustomer(customer);
+//    }
+
+    @PostMapping
+    public ResponseEntity<?> createNewCustomer(@RequestBody NewCustomerRequest newCustomerRequest){
+        CustomerResponse customerResponse = customerService.createNewCust2(newCustomerRequest);
+        CommonResponse<CustomerResponse> response = CommonResponse.<CustomerResponse>builder()
+                .message("Successfully create new customer")
+                .statusCode(HttpStatus.CREATED.value())
+                .data(customerResponse)
+                .build();
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(response);
     }
 
+//    @GetMapping("/{id}")
+//    public Customer getCustomerById(@PathVariable String id){
+//        return customerService.getByIdCustomer(id);
+//    }
+
     @GetMapping("/{id}")
-    public Customer getCustomerById(@PathVariable String id){
-        return customerService.getByIdCustomer(id);
+    public ResponseEntity<?> getCustomerById(@PathVariable String id){
+        CustomerResponse customerResponse = customerService.getOne(id);
+        CommonResponse<CustomerResponse> response = CommonResponse.<CustomerResponse>builder()
+                .message("Successfully get customer by id")
+                .statusCode(HttpStatus.OK.value())
+                .data(customerResponse)
+                .build();
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(response);
     }
 
     @GetMapping()

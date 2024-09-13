@@ -5,6 +5,7 @@ import jakarta.validation.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.server.ResponseStatusException;
@@ -41,6 +42,17 @@ public class ErrorController {
                 .status(HttpStatus.BAD_REQUEST) //status code ini tergantung hasil dari client. status exception ini bisa kita pake untuk custom keluaran kode status. gimana penaganannya? di trace itu
                 .body(response);
 
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<?> authenticationException(AuthenticationException e){
+        CommonResponse<?> response = CommonResponse.builder()
+                .statusCode(HttpStatus.UNAUTHORIZED.value())
+                .message("Dah terbaca customized exceptionku! Invalid Credential" + e.getMessage())
+                .build();
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED) //status code ini tergantung hasil dari client. status exception ini bisa kita pake untuk custom keluaran kode status. gimana penaganannya? di trace itu
+                .body(response);
     }
 
 }

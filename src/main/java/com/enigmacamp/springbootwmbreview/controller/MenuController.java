@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,6 +29,8 @@ public class MenuController {
     private ValidationUtil validationUtil;
 
     @PostMapping()
+    //yg preauthorized ini bisa diletakkan juga di atas kelas untuk membatasi role nya untuk keseluruhan kelas
+    @PreAuthorize("hasRole('ADMIN')") //ini untuk batasi akses berdasarkan rolenya. aku buat cuma ADMIN karna si spring dah pintar karna langsung baca setelah karakter role_
     public ResponseEntity<CommonResponse<MenuResponse>> createNewMenu(@RequestBody NewMenuRequest newMenuRequest){
         validationUtil.validate(newMenuRequest);
         MenuResponse menuResponse = menuService.createNewMenu(newMenuRequest);

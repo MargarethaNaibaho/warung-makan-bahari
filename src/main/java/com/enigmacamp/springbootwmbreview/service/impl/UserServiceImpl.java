@@ -24,6 +24,7 @@ public class UserServiceImpl implements UserService {
                 .id(userCredential.getId())
                 .username(userCredential.getUsername())
                 .password(userCredential.getPassword())
+                .role(userCredential.getRole().getName())
                 .build();
     }
 
@@ -42,6 +43,7 @@ public class UserServiceImpl implements UserService {
                 .id(userCredential.getId())
                 .username(userCredential.getUsername())
                 .password(userCredential.getPassword())
+                .role(userCredential.getRole().getName())
                 .build();
     }
 }

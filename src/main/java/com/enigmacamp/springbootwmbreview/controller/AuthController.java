@@ -41,8 +41,11 @@ public class AuthController {
                 .statusCode(HttpStatus.OK.value())
                 .data(loginResponse)
                 .build();
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(response);
+//        return ResponseEntity
+//                .status(HttpStatus.OK)
+//                .body(response);
+
+        //hasilnya ini sama dengan return yg di atas
+        return ResponseEntity.ok(response);
     }
 }
