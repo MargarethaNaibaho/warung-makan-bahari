@@ -6,12 +6,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
-public class MenuResponse {
-    private String menuId;
-    private String name;
-    private Long price;
-    private FileResponse image;
+public class FileResponse {
+    private String filename;
+    private String url;
 }

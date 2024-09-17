@@ -2,6 +2,7 @@ package com.enigmacamp.springbootwmbreview.service.impl;
 
 import com.enigmacamp.springbootwmbreview.dto.request.NewMenuRequest;
 import com.enigmacamp.springbootwmbreview.dto.request.PagingMenuRequest;
+import com.enigmacamp.springbootwmbreview.dto.response.FileResponse;
 import com.enigmacamp.springbootwmbreview.dto.response.MenuResponse;
 import com.enigmacamp.springbootwmbreview.entity.Menu;
 import com.enigmacamp.springbootwmbreview.entity.MenuImage;
@@ -35,11 +36,7 @@ public class MenuServiceImpl implements MenuService {
                 .menuImage(menuImage)
                 .build();
         menuRepository.save(menu);
-        return MenuResponse.builder()
-                .menuId(menu.getId())
-                .name(menu.getName())
-                .price(menu.getPrice())
-                .build();
+        return mapToResponse(menu);
     }
 
     @Override
@@ -87,5 +84,19 @@ public class MenuServiceImpl implements MenuService {
     private Menu findByIdOrThrowNotFound(String id){
         //aku ganti si runtimeexception menjadi class error controller yg kubu
         return menuRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Menu isn't found!"));
+    }
+
+    private MenuResponse mapToResponse(Menu menu){
+        FileResponse fileResponse = FileResponse.builder()
+                .filename(menu.getMenuImage().getName())
+                .url("/api/menus/" + menu.getId() + "/image")
+                .build();
+
+        return MenuResponse.builder()
+                .menuId(menu.getId())
+                .price(menu.getPrice())
+                .name(menu.getName())
+                .image(fileResponse)
+                .build();
     }
 }
