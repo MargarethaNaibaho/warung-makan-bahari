@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 @Data
 @NoArgsConstructor
@@ -20,4 +21,6 @@ public class NewMenuRequest {
     @NotNull
     @Min(value = 0, message = "Menu price must be greater than or equal to zero")
     private Long price;
+
+    private MultipartFile multipartFile;
 }

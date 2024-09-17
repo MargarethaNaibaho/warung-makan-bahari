@@ -10,12 +10,21 @@ import com.enigmacamp.springbootwmbreview.service.MenuService;
 import com.enigmacamp.springbootwmbreview.util.ValidationUtil;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 @RestController
@@ -28,10 +37,19 @@ public class MenuController {
     @NonNull
     private ValidationUtil validationUtil;
 
-    @PostMapping()
+    //consume ini digunakan untuk supaya si postmapping bisa terima dalam bentuk file
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     //yg preauthorized ini bisa diletakkan juga di atas kelas untuk membatasi role nya untuk keseluruhan kelas
     @PreAuthorize("hasRole('ADMIN')") //ini untuk batasi akses berdasarkan rolenya. aku buat cuma ADMIN karna si spring dah pintar karna langsung baca setelah karakter role_
-    public ResponseEntity<CommonResponse<MenuResponse>> createNewMenu(@RequestBody NewMenuRequest newMenuRequest){
+    public ResponseEntity<CommonResponse<MenuResponse>> createNewMenu(@RequestParam String name,
+                                                                      @RequestParam Long price,
+                                                                      @RequestParam MultipartFile image
+    ){
+        NewMenuRequest newMenuRequest = NewMenuRequest.builder()
+                .name(name)
+                .price(price)
+                .multipartFile(image)
+                .build();
         validationUtil.validate(newMenuRequest);
         MenuResponse menuResponse = menuService.createNewMenu(newMenuRequest);
         CommonResponse<MenuResponse> response = CommonResponse.<MenuResponse>builder()
@@ -94,4 +112,23 @@ public class MenuController {
         menuService.deleteMenuById(id);
     }
 
+    //id menu, bukan menu image
+    @GetMapping("/{id}/image")
+    public ResponseEntity<?> downloadMenuImage(@PathVariable String id){
+        Resource resource = menuService.getMenuImageById(id);
+
+        //HTTP Header Response
+        //ini si attachment maksudnya adalah konten harus diperlakukan sebagai lampiran yan perlu diunduh
+        //ada juga inline yg gunanya untuk ditampikan di browser
+        //filename ini maksudnya nama file yg akan didownload nanti
+        String headerValues = "inline; attachment; filename=\"" + resource.getFilename() + "\"";
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+
+                //HttpHeaders.CONTENT_DISPOSITION untuk memberitahu bagaimana oknten dari response seharusnya diperlakukan oleh klien (seperti browser atau aplikasi)
+                .header(HttpHeaders.CONTENT_DISPOSITION, headerValues)
+                .contentType(MediaType.parseMediaType("image/jpeg"))
+                .body(resource);
+    }
 }

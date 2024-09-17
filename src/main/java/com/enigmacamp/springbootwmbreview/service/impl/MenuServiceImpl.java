@@ -4,9 +4,12 @@ import com.enigmacamp.springbootwmbreview.dto.request.NewMenuRequest;
 import com.enigmacamp.springbootwmbreview.dto.request.PagingMenuRequest;
 import com.enigmacamp.springbootwmbreview.dto.response.MenuResponse;
 import com.enigmacamp.springbootwmbreview.entity.Menu;
+import com.enigmacamp.springbootwmbreview.entity.MenuImage;
 import com.enigmacamp.springbootwmbreview.repository.MenuRepository;
+import com.enigmacamp.springbootwmbreview.service.MenuImageService;
 import com.enigmacamp.springbootwmbreview.service.MenuService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -19,13 +22,17 @@ import org.springframework.web.server.ResponseStatusException;
 @RequiredArgsConstructor
 public class MenuServiceImpl implements MenuService {
     private final MenuRepository menuRepository;
+    private final MenuImageService menuImageService;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
     public MenuResponse createNewMenu(NewMenuRequest newMenuRequest) {
+        MenuImage menuImage = menuImageService.createFile(newMenuRequest.getMultipartFile());
+
         Menu menu = Menu.builder()
                 .name(newMenuRequest.getName())
                 .price(newMenuRequest.getPrice())
+                .menuImage(menuImage)
                 .build();
         menuRepository.save(menu);
         return MenuResponse.builder()
@@ -68,6 +75,13 @@ public class MenuServiceImpl implements MenuService {
     @Override
     public void deleteMenuById(String id) {
         menuRepository.deleteById(id);
+    }
+
+    @Override
+    public Resource getMenuImageById(String id) {
+        Menu menu = findByIdOrThrowNotFound(id);
+        Resource resource = menuImageService.findByPath(menu.getMenuImage().getPath());
+        return resource;
     }
 
     private Menu findByIdOrThrowNotFound(String id){

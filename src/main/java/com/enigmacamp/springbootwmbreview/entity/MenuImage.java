@@ -8,12 +8,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "m_menu")
-@Builder
+@Table(name = "m_menu_image")
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-public class Menu {
+@AllArgsConstructor
+@Builder
+public class MenuImage {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
@@ -22,9 +22,11 @@ public class Menu {
     private String name;
 
     @Column
-    private Long price;
+    private String contentType;
 
-    @OneToOne
-    @JoinColumn(name = "menu_image_id", unique = true)
-    private MenuImage menuImage;
+    @Column
+    private String path;
+
+    @Column
+    private Long size;
 }
