@@ -4,11 +4,9 @@ import com.enigmacamp.springbootwmbreview.constant.ERole;
 import com.enigmacamp.springbootwmbreview.dto.request.AuthRequest;
 import com.enigmacamp.springbootwmbreview.dto.response.LoginResponse;
 import com.enigmacamp.springbootwmbreview.dto.response.RegisterResponse;
-import com.enigmacamp.springbootwmbreview.entity.AppUser;
-import com.enigmacamp.springbootwmbreview.entity.Customer;
-import com.enigmacamp.springbootwmbreview.entity.Role;
-import com.enigmacamp.springbootwmbreview.entity.UserCredential;
+import com.enigmacamp.springbootwmbreview.entity.*;
 import com.enigmacamp.springbootwmbreview.repository.UserCredentialRepository;
+import com.enigmacamp.springbootwmbreview.service.AdminService;
 import com.enigmacamp.springbootwmbreview.service.AuthService;
 import com.enigmacamp.springbootwmbreview.service.CustomerService;
 import com.enigmacamp.springbootwmbreview.service.RoleService;
@@ -36,6 +34,7 @@ public class AuthServiceImpl implements AuthService {
     private final JwtUtil jwtUtil; //ini tadi dah kita buat file nya di package util
     private final ValidationUtil validationUtil;
     private final AuthenticationManager authenticationManager; //ini diambil dari bean yg kita buat di SecurityConfiguration.java
+    private final AdminService adminService;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -68,6 +67,41 @@ public class AuthServiceImpl implements AuthService {
 
         } catch(DataIntegrityViolationException e){
             throw new ResponseStatusException(HttpStatus.CONFLICT, "User already exists!");
+        }
+
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public RegisterResponse registerAdmin(AuthRequest authRequest) {
+        try{
+            validationUtil.validate(authRequest);
+            //role
+            Role role = roleService.getOrSave(Role.builder()
+                    .name(ERole.ROLE_ADMIN)
+                    .build());
+
+            //user credential
+            UserCredential userCredential = UserCredential.builder()
+                    .username(authRequest.getUsername().toLowerCase()) //ini supaya semua username baru yg didaftarkan dijadikan lowerCase
+                    .password(passwordEncoder.encode(authRequest.getPassword()))
+                    .role(role)
+                    .build();
+            userCredentialRepository.saveAndFlush(userCredential);
+
+            //admin
+            Admin admin = Admin.builder()
+                    .userCredential(userCredential)
+                    .build();
+
+            adminService.createAdmin(admin);
+            return RegisterResponse.builder()
+                    .username(userCredential.getUsername())
+                    .role(userCredential.getRole().getName().toString())
+                    .build();
+
+        } catch(DataIntegrityViolationException e){
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Admin already exists!");
         }
 
     }

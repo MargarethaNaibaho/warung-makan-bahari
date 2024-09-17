@@ -18,11 +18,7 @@ public class Admin {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    @Column
     private String name;
-
-    @Column(name = "phone_number")
-    private String phoneNumber;
 
     @OneToOne
     @JoinColumn(name = "m_user_credential_id")

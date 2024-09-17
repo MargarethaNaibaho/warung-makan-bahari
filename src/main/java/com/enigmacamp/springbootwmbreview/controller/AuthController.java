@@ -9,6 +9,7 @@ import com.enigmacamp.springbootwmbreview.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,7 +34,22 @@ public class AuthController {
                 .body(response);
     }
 
+    @PostMapping("/register/admin")
+//    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> registerAdmin(@RequestBody AuthRequest authRequest){
+        RegisterResponse registerResponse = authService.registerAdmin(authRequest);
+        CommonResponse<RegisterResponse> response = CommonResponse.<RegisterResponse>builder()
+                .message("Successfully create a new admin")
+                .statusCode(HttpStatus.CREATED.value())
+                .data(registerResponse)
+                .build();
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(response);
+    }
+
     @PostMapping("/login")
+
     public ResponseEntity<?> login(@RequestBody AuthRequest authRequest){
         LoginResponse loginResponse = authService.login(authRequest);
         CommonResponse<LoginResponse> response = CommonResponse.<LoginResponse>builder()
