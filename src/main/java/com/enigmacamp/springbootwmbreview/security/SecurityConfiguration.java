@@ -4,6 +4,7 @@ import jakarta.servlet.DispatcherType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -49,12 +50,15 @@ public class SecurityConfiguration {
 
         //ini dah jalan
         return httpSecurity
-                .httpBasic(withDefaults())
+//                .httpBasic(withDefaults())
+                .httpBasic(base -> base.disable())
                 .csrf(csrf -> csrf.disable()) //arti csrf.disable ini adalah nonaktifkannya karna kita pake stateless auntentikasi(JWT)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS) //ini artinya kita gabakal buat suatu session
                 )
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
-                        .requestMatchers("/api/v1/auth/**").permitAll() //artinya semua request dengan URL pattern ** bisa jalan tanpa perlu autentikasi login bawaan spring templatenya
+                        .requestMatchers(HttpMethod.POST, "/api/v1/auth/**").permitAll() //artinya semua request dengan URL pattern ** bisa jalan tanpa perlu autentikasi login bawaan spring templatenya
+                        .requestMatchers(HttpMethod.GET, "/swagger-ui/**", "/v3/api-docs/**", "/martha/**").permitAll()
+                        .requestMatchers("/api/**").authenticated()
                         .anyRequest().authenticated() //selain url yg ditetapkan di atas, harus diautentikasi
                 )
                 //.formLogin(formLogin -> formLogin.disable()) //bisa diganti dengan .formLogin(AbstractHttpConfigurer::disable)

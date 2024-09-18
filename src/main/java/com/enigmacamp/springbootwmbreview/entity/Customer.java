@@ -12,6 +12,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Customer {
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
@@ -28,6 +29,10 @@ public class Customer {
     @OneToOne
     @JoinColumn(name = "m_user_credential_id")
     private UserCredential userCredential;
+
+    public Customer(String name){
+        this.name = name;
+    }
 
     //ini aku buat sendiri
     @PrePersist
