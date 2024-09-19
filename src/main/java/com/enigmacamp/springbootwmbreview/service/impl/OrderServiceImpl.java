@@ -161,6 +161,10 @@ public class OrderServiceImpl implements OrderService {
     public List<OrderResponse> getAll() {
         List<Order> orders = orderRepository.findAll();
 
+        if(orders.isEmpty()){
+            throw new RuntimeException("No orders found!");
+        }
+
         //cara pertama
         List<OrderResponse> orderResponses = new ArrayList<>();
         for(Order order : orders){
@@ -171,7 +175,7 @@ public class OrderServiceImpl implements OrderService {
         //cara kedua pake lambda stream
         List<OrderResponse> orderResponseListStream = orders.stream().map(order -> mapToOrderResponse(order)).collect(Collectors.toList());
 
-        return orderResponses;
+        return orderResponseListStream;
     }
 
     @Override

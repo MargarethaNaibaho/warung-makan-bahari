@@ -7,6 +7,7 @@ import com.enigmacamp.springbootwmbreview.dto.response.CustomerResponse;
 import com.enigmacamp.springbootwmbreview.dto.response.PagingResponse;
 import com.enigmacamp.springbootwmbreview.entity.Customer;
 import com.enigmacamp.springbootwmbreview.service.CustomerService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -50,6 +51,7 @@ public class CustomerController {
 //    }
 
     @GetMapping("/{id}")
+//    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<?> getCustomerById(@PathVariable String id){
         CustomerResponse customerResponse = customerService.getOne(id);
         CommonResponse<CustomerResponse> response = CommonResponse.<CustomerResponse>builder()
@@ -64,6 +66,7 @@ public class CustomerController {
     }
 
     @GetMapping()
+    @SecurityRequirement(name = "Bearer Authentication")
     //dari sisi user kita buat mulai dari angka 1 untuk halaman pertama
     //tapi dari sisi backend, itu dimulai dari angka 0 yg menjadi halaman pertama.makanya nanti di service, nilai dari page yg dibawa dari sini akan dikurangi 1
     public ResponseEntity<?> getAllCustomer(@RequestParam(required = false, defaultValue = "1") Integer page,
