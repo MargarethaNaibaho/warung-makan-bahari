@@ -4,6 +4,7 @@ import com.enigmacamp.springbootwmbreview.entity.MenuImage;
 import com.enigmacamp.springbootwmbreview.repository.MenuImageRepository;
 import com.enigmacamp.springbootwmbreview.service.MenuImageService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
@@ -22,7 +23,8 @@ import java.nio.file.StandardCopyOption;
 @RequiredArgsConstructor
 public class MenuImageServiceImpl implements MenuImageService {
     private final MenuImageRepository menuImageRepository;
-    private final Path directoryPath = Paths.get("/home/enigma/Documents/pelajaran/week 8/asset/image");
+
+    private final Path directoryPath = Paths.get("${app.spring-wmb-review.directory-image-path}");
 
     @Override
     public MenuImage createFile(MultipartFile multipartFile) {
