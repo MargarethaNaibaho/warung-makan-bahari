@@ -181,9 +181,9 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public List<OrderResponse> getAllByCustomerId(String id) {
         List<Order> orders = orderRepository.findAllByCustomer_IdOrderByTransDateDesc(id);
-        if(orders.isEmpty()){
-            throw new RuntimeException("No orders found!");
-        }
+//        if(orders.isEmpty()){
+//            throw new RuntimeException("No orders found!");
+//        }
 
         List<OrderResponse> orderResponseListStream = orders.stream().map(order -> mapToOrderResponse(order)).collect(Collectors.toList());
 
