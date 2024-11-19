@@ -43,6 +43,17 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
+    public Customer getByUserCredentialCustomer(String id) {
+        Optional<Customer> customer = customerRepository.findByUserCredentialId(id);
+        return customer.orElseThrow(() -> new RuntimeException("Customer isn't found!"));
+    }
+
+    @Override
+    public Boolean doesPhoneNumberExists(String phoneNumber){
+        return customerRepository.existsCustomerByPhoneNumber(phoneNumber);
+    }
+
+    @Override
     //PageRequest ini dari spring framework. Pageable juga
     public Page<Customer> getAllCustomer(PagingCustomerRequest pagingCustomerRequest) {
         Pageable pageable = PageRequest.of(pagingCustomerRequest.getPage() - 1, pagingCustomerRequest.getSize());

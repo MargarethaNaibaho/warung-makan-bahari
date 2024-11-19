@@ -13,8 +13,9 @@ public class OrderRequest {
     private String customerId;
 
     //yg di bawah ini aku ganti dulu karna aku pake tableName di orderserviceimpl
-//    private String tableId;
+    private String tableId;
 
-    private String tableName;
+    //ini kucomment karna mau pake tableId di react native mobile
+//    private String tableName;
     private List<OrderDetailRequest> orderDetails; //penamaannya ini supaya ga bingugn pas di postman
 }

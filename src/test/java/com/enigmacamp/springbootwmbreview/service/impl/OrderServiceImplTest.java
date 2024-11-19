@@ -55,7 +55,7 @@ class OrderServiceImplTest {
     void createNewTransaction_Succeed() {
         OrderRequest request = new OrderRequest();
         request.setCustomerId("123");
-        request.setTableName("Table A");
+        request.setTableId("Table A");
 
         //set up mock customer
         Customer customer = Customer.builder()

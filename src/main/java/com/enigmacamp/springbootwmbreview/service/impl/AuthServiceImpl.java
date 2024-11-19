@@ -2,6 +2,7 @@ package com.enigmacamp.springbootwmbreview.service.impl;
 
 import com.enigmacamp.springbootwmbreview.constant.ERole;
 import com.enigmacamp.springbootwmbreview.dto.request.AuthRequest;
+import com.enigmacamp.springbootwmbreview.dto.request.NewFullCustomerRequest;
 import com.enigmacamp.springbootwmbreview.dto.response.LoginResponse;
 import com.enigmacamp.springbootwmbreview.dto.response.RegisterResponse;
 import com.enigmacamp.springbootwmbreview.entity.*;
@@ -41,6 +42,7 @@ public class AuthServiceImpl implements AuthService {
     public RegisterResponse registerCustomer(AuthRequest authRequest) {
         try{
             validationUtil.validate(authRequest);
+
             //role
             Role role = roleService.getOrSave(Role.builder()
                     .name(ERole.ROLE_CUSTOMER)
@@ -69,6 +71,45 @@ public class AuthServiceImpl implements AuthService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "User already exists!");
         }
 
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public RegisterResponse registerCustomer2(NewFullCustomerRequest newFullCustomerRequest){
+        try {
+            validationUtil.validate(newFullCustomerRequest);
+
+            if (customerService.doesPhoneNumberExists(newFullCustomerRequest.getPhoneNumber())) {
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "User already exists!");
+            }
+
+            //Role
+            Role role = roleService.getOrSave(Role.builder()
+                    .name(ERole.ROLE_CUSTOMER)
+                    .build());
+
+            //User credential
+            UserCredential userCredential = UserCredential.builder()
+                    .username(newFullCustomerRequest.getUsername().toLowerCase())
+                    .password(passwordEncoder.encode(newFullCustomerRequest.getPassword()))
+                    .role(role)
+                    .build();
+            userCredentialRepository.saveAndFlush(userCredential);
+
+            Customer customer = Customer.builder()
+                    .name(newFullCustomerRequest.getName())
+                    .phoneNumber(newFullCustomerRequest.getPhoneNumber())
+                    .userCredential(userCredential)
+                    .build();
+            customerService.createNewCustomer(customer);
+
+            return RegisterResponse.builder()
+                    .username(userCredential.getUsername())
+                    .role(userCredential.getRole().getName().toString())
+                    .build();
+        } catch(DataIntegrityViolationException e){
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "User already exists!");
+        }
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -135,8 +176,10 @@ public class AuthServiceImpl implements AuthService {
         //dicasting dulu supaya bisa dapat principal (ambil objek dari si appUser)
         AppUser appUser = (AppUser) authenticate.getPrincipal();
         String token = jwtUtil.generateToken(appUser); //nnti kalo dah ada transaksi login, param ini kita isi dengan userId yg beneran
+        String customerId = customerService.getByUserCredentialCustomer(appUser.getId()).getId();
         return LoginResponse.builder()
                 .token(token)
+                .customerId(customerId)
                 .role(appUser.getRole().name())
                 .build();
     }

@@ -15,6 +15,7 @@ public interface MenuService {
     MenuResponse createNewMenu(NewMenuRequest newMenuRequest);
     Menu getMenuById(String id);
     Page<Menu> getAllMenus(PagingMenuRequest pagingMenuRequest);
+    List<MenuResponse> getAllMenusWithoutPaging();
     Menu updateMenu(Menu menu);
     void deleteMenuById(String id);
     Resource getMenuImageById(String id);

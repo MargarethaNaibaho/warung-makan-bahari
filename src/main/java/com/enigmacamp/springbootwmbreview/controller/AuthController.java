@@ -1,6 +1,7 @@
 package com.enigmacamp.springbootwmbreview.controller;
 
 import com.enigmacamp.springbootwmbreview.dto.request.AuthRequest;
+import com.enigmacamp.springbootwmbreview.dto.request.NewFullCustomerRequest;
 import com.enigmacamp.springbootwmbreview.dto.response.CommonResponse;
 import com.enigmacamp.springbootwmbreview.dto.response.LoginResponse;
 import com.enigmacamp.springbootwmbreview.dto.response.RegisterResponse;
@@ -22,13 +23,27 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/register/customer")
-    public ResponseEntity<?> registerCustomer(@RequestBody AuthRequest authRequest){
+    public ResponseEntity<?> registerCustomer(@RequestBody AuthRequest authRequest) {
         RegisterResponse registerResponse = authService.registerCustomer(authRequest);
         CommonResponse<RegisterResponse> response = CommonResponse.<RegisterResponse>builder()
                 .message("Successfully create a new customer")
                 .statusCode(HttpStatus.CREATED.value())
                 .data(registerResponse)
                 .build();
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(response);
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<?> registerCustomer2(@RequestBody NewFullCustomerRequest newFullCustomerRequest){
+        RegisterResponse registerResponse = authService.registerCustomer2(newFullCustomerRequest);
+        CommonResponse<RegisterResponse> response = CommonResponse.<RegisterResponse>builder()
+                .message("Successfully create a new customer")
+                .statusCode(HttpStatus.CREATED.value())
+                .data(registerResponse)
+                .build();
+
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(response);

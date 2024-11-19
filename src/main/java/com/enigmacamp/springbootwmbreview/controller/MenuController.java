@@ -29,7 +29,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/menus")
+@RequestMapping("/api/v1/menus")
 public class MenuController {
     @NonNull
     private MenuService menuService;
@@ -67,7 +67,7 @@ public class MenuController {
         return menuService.getMenuById(id);
     }
 
-    @GetMapping()
+    @GetMapping("/withPaging")
     public ResponseEntity<?> getAllMenus(@RequestParam(required = false) String name,
                                          @RequestParam(required = false) Long minPrice,
                                          @RequestParam(required = false) Long maxPrice,
@@ -97,6 +97,18 @@ public class MenuController {
                 .paging(pagingResponse)
                 .build();
 
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(response);
+    }
+
+    @GetMapping()
+    public ResponseEntity<?> getAllMenusWithoutPaging(){
+        CommonResponse<List<MenuResponse>> response = CommonResponse.<List<MenuResponse>>builder()
+                .message("Successfully get all customers")
+                .statusCode(HttpStatus.OK.value())
+                .data(menuService.getAllMenusWithoutPaging())
+                .build();
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(response);

@@ -95,8 +95,8 @@ public class OrderServiceImpl implements OrderService {
     //cara ini dia ngeflush order yg dah jadi dulu. kemudian dia ngedata order detail kemudian createBulk
     public OrderResponse createNewTransaction(OrderRequest orderRequest){
         Customer customer = customerService.getByIdCustomer(orderRequest.getCustomerId());
-        Table table = tableService.getTableByName(orderRequest.getTableName());
-
+//        Table table = tableService.getTableByName(orderRequest.getTableName());
+        Table table = tableService.getTableById(orderRequest.getTableId());
         //buat entity object terlebih dahulu
         //ini pake chaining method. nnti kalo ada method yg dipanggil berulang kali, nilainya yg dipake adalah method itu yg terakhir
         //ga perlu urut dengan definisi dari kelas si order itu
@@ -173,6 +173,18 @@ public class OrderServiceImpl implements OrderService {
         }
 
         //cara kedua pake lambda stream
+        List<OrderResponse> orderResponseListStream = orders.stream().map(order -> mapToOrderResponse(order)).collect(Collectors.toList());
+
+        return orderResponseListStream;
+    }
+
+    @Override
+    public List<OrderResponse> getAllByCustomerId(String id) {
+        List<Order> orders = orderRepository.findAllByCustomer_IdOrderByTransDateDesc(id);
+        if(orders.isEmpty()){
+            throw new RuntimeException("No orders found!");
+        }
+
         List<OrderResponse> orderResponseListStream = orders.stream().map(order -> mapToOrderResponse(order)).collect(Collectors.toList());
 
         return orderResponseListStream;

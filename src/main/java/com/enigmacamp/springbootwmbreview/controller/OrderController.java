@@ -22,7 +22,7 @@ public class OrderController {
     private final OrderDetailService orderDetailService;
 
     @PostMapping("/api/v1/transaction")
-    //ResponseEntity ini bukan entity yg aku buat sendiri. itu buatan si java
+    //ResponseEntity    ini bukan entity yg aku buat sendiri. itu buatan si java
     //ResponseEntity untuk dapat httpstatus. ini juga bisa kita pake untuk error handling
     public ResponseEntity<CommonResponse<OrderResponse>> createNewTransaction(@RequestBody OrderRequest orderRequest){
         OrderResponse orderResponse = orderService.createNewTransaction(orderRequest);
@@ -53,6 +53,20 @@ public class OrderController {
     @GetMapping("/api/v1/transaction")
     public ResponseEntity<CommonResponse<List<OrderResponse>>> getAllTransactions(){
         List<OrderResponse> orderResponses = orderService.getAll();
+        CommonResponse<List<OrderResponse>> commonResponse = CommonResponse.<List<OrderResponse>>builder()
+                .message("Successfully created new transasction")
+                .statusCode(HttpStatus.CREATED.value())
+                .data(orderResponses)
+                .build();
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(commonResponse);
+    }
+
+    @GetMapping("/api/v1/transaction/customer/{id}")
+    public ResponseEntity<?> getAllTransactionsByCustomerId(@PathVariable String id){
+        List<OrderResponse> orderResponses = orderService.getAllByCustomerId(id);
         CommonResponse<List<OrderResponse>> commonResponse = CommonResponse.<List<OrderResponse>>builder()
                 .message("Successfully created new transasction")
                 .statusCode(HttpStatus.CREATED.value())

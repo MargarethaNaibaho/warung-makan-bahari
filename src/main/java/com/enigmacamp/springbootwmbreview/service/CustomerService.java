@@ -15,7 +15,11 @@ public interface CustomerService {
 
     CustomerResponse createNewCust3(Customer customer);
 
+    Boolean doesPhoneNumberExists(String phoneNumber);
+
     Customer getByIdCustomer(String id);
+
+    Customer getByUserCredentialCustomer(String id);
 
     CustomerResponse getOne(String id);
 

@@ -58,6 +58,8 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/**").permitAll() //artinya semua request dengan URL pattern ** bisa jalan tanpa perlu autentikasi login bawaan spring templatenya
                         .requestMatchers(HttpMethod.GET, "/swagger-ui/**", "/v3/api-docs/**", "/martha/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/menus/**").permitAll()
+//                        .requestMatchers(HttpMethod.GET, "/api/v1/tables/**").permitAll()
                         .requestMatchers("/api/**").authenticated()
                         .anyRequest().authenticated() //selain url yg ditetapkan di atas, harus diautentikasi
                 )

@@ -19,6 +19,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class MenuServiceImpl implements MenuService {
@@ -64,6 +67,16 @@ public class MenuServiceImpl implements MenuService {
     }
 
     @Override
+    public List<MenuResponse> getAllMenusWithoutPaging() {
+        List<Menu> menuList = menuRepository.findAll();
+        List<MenuResponse> menuResponseList = new ArrayList<>();
+        for(Menu menu : menuList){
+            menuResponseList.add(mapToResponse(menu));
+        }
+        return menuResponseList;
+    }
+
+    @Override
     public Menu updateMenu(Menu menu) {
         findByIdOrThrowNotFound(menu.getId());
         return menuRepository.save(menu);
@@ -89,7 +102,7 @@ public class MenuServiceImpl implements MenuService {
     private MenuResponse mapToResponse(Menu menu){
         FileResponse fileResponse = FileResponse.builder()
                 .filename(menu.getMenuImage().getName())
-                .url("/api/menus/" + menu.getId() + "/image")
+                .url("http://192.168.82.202:8080/api/v1/menus/" + menu.getId() + "/image")
                 .build();
 
         return MenuResponse.builder()

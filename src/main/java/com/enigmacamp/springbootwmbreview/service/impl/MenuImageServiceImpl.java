@@ -24,7 +24,7 @@ import java.nio.file.StandardCopyOption;
 public class MenuImageServiceImpl implements MenuImageService {
     private final MenuImageRepository menuImageRepository;
 
-    private final Path directoryPath = Paths.get("${app.spring-wmb-review.directory-image-path}");
+    private final Path directoryPath = Paths.get("/home/enigma/Documents/pelajaran/week 8/asset/image/");
 
     @Override
     public MenuImage createFile(MultipartFile multipartFile) {
