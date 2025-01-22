@@ -102,7 +102,7 @@ public class MenuServiceImpl implements MenuService {
     private MenuResponse mapToResponse(Menu menu){
         FileResponse fileResponse = FileResponse.builder()
                 .filename(menu.getMenuImage().getName())
-                .url("http://10.10.102.123:8080/api/v1/menus/" + menu.getId() + "/image")
+                .url("http://192.168.124.202:8080/api/v1/menus/" + menu.getId() + "/image")
                 .build();
 
         return MenuResponse.builder()
